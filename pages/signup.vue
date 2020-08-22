@@ -1,8 +1,7 @@
 <template lang="pug">
   div
-    .error {{ error }}
-    h2 Login
-    form(@submit.prevent="userLogin")
+    h2 Signup
+    form(@submit.prevent="userSignup")
       div
         label Username
         input(
@@ -20,33 +19,32 @@
       div
         button(type="submit") Submit
 
-      nuxt-link(to="signup") sign up
-
+      nuxt-link(to="login") login
 </template>
 
 <script>
 export default {
+  auth: false,
+
   data() {
     return {
       login: {
         login: '',
         password: '',
       },
-      error: null,
     }
   },
   methods: {
-    async userLogin() {
+    async userSignup() {
       try {
-        const response = await this.$auth.loginWith('local', {
+        const response = await this.$axios.post('/signup', this.login)
+        console.log(response)
+        this.$auth.loginWith('local', {
           data: this.login,
         })
-        console.log(response)
-        // debugger
-        // this.$auth.setUser(response.data.user)
+        this.$router.push('/')
       } catch (err) {
         console.log(err)
-        this.error = err
       }
     },
   },

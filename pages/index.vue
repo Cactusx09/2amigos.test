@@ -1,7 +1,9 @@
 <template lang="pug">
-  div
+  div {{ error }}
     div(v-if="$auth.loggedIn")
       h1 WOW!!!
+      div {{ $auth.user }}
+      button(@click="crateNote") create note
       button(@click="logout") logout
     div(v-else)
       nuxt-link(to="sign-up") sign up
@@ -10,13 +12,30 @@
 
 <script>
 export default {
+  data() {
+    return {
+      error: null,
+    }
+  },
+  // mounted() {
+  //   this.$auth.fetchUser()
+  //   debugger
+  // },
   computed: {
     // mapState: [...$auth.loggedIn]
   },
   methods: {
     async logout() {
-      const logout = await this.$auth.logout(() => {})
-      console.log(logout)
+      try {
+        const logout = await this.$auth.logout()
+        console.log(logout)
+      } catch (error) {
+        debugger
+        this.error = error
+      }
+    },
+    createNote() {
+      console.log('lll')
     },
   },
 }

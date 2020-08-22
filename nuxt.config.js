@@ -85,15 +85,20 @@ export default {
   auth: {
     strategies: {
       local: {
+        token: {
+          property: 'token',
+          // required: true,
+          // type: 'Bearer'
+        },
+        user: {
+          property: 'user',
+          // autoFetch: false,
+        },
         endpoints: {
-          token: {
-            property: 'token',
-            // required: true,
-            // type: 'Bearer'
-          },
           login: { url: '/login', method: 'post' },
           logout: { url: '/logout', method: 'get' },
-          user: false,
+          user: { url: '/user', method: 'get' },
+          // user: false,
         },
       },
     },
