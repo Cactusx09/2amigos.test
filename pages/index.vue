@@ -1,34 +1,25 @@
-<template>
-  <div class="container">
-    <div>
-      <Logo />
-      <h1 class="title">
-        2amigos.test
-      </h1>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
-    </div>
-  </div>
+<template lang="pug">
+  div
+    div(v-if="$auth.loggedIn")
+      h1 WOW!!!
+      button(@click="logout") logout
+    div(v-else)
+      nuxt-link(to="sign-up") sign up
+      nuxt-link(to="login") login
 </template>
 
 <script>
-export default {}
+export default {
+  computed: {
+    // mapState: [...$auth.loggedIn]
+  },
+  methods: {
+    async logout() {
+      const logout = await this.$auth.logout(() => {})
+      console.log(logout)
+    },
+  },
+}
 </script>
 
 <style>
