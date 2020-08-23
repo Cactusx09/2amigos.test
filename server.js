@@ -40,6 +40,9 @@ app.use(
 const userRouter = require('./app/routes/auth')
 app.use(userRouter)
 
+const notesRouter = require('./app/routes/notes')
+app.use(notesRouter)
+
 const db = require('./app/configs/database.js')
 
 /**
@@ -64,24 +67,24 @@ app.get('/', (req, res) => {
  *      '200':
  *        description: Select users from user
  */
-app.get(
-  '/api/users',
-  // passport.authenticate('jwt', { session: false }),
-  (req, res, next) => {
-    const sql = 'SELECT * FROM user'
-    const params = []
-    db.all(sql, params, (err, rows) => {
-      if (err) {
-        res.status(400).json({ error: err.message })
-        return
-      }
-      res.json({
-        message: 'success',
-        data: rows,
-      })
-    })
-  }
-)
+// app.get(
+//   '/api/users',
+//   // passport.authenticate('jwt', { session: false }),
+//   (req, res, next) => {
+//     const sql = 'SELECT * FROM user'
+//     const params = []
+//     db.all(sql, params, (err, rows) => {
+//       if (err) {
+//         res.status(400).json({ error: err.message })
+//         return
+//       }
+//       res.json({
+//         message: 'success',
+//         data: rows,
+//       })
+//     })
+//   }
+// )
 
 /**
  * @swagger
@@ -97,21 +100,21 @@ app.get(
  *      '200':
  *        description: Select users from user
  */
-app.get('/api/user/:id', (req, res, next) => {
-  const sql = 'SELECT * FROM user WHERE id = ?'
-  const params = [req.params.id]
-  db.get(sql, params, (err, row) => {
-    if (err) {
-      res.status(400).json({ error: err.message })
-      return
-    }
-    console.log(row)
-    res.json({
-      message: 'success',
-      data: row,
-    })
-  })
-})
+// app.get('/api/user/:id', (req, res, next) => {
+//   const sql = 'SELECT * FROM user WHERE id = ?'
+//   const params = [req.params.id]
+//   db.get(sql, params, (err, row) => {
+//     if (err) {
+//       res.status(400).json({ error: err.message })
+//       return
+//     }
+//     console.log(row)
+//     res.json({
+//       message: 'success',
+//       data: row,
+//     })
+//   })
+// })
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
