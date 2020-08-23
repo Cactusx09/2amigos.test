@@ -56,12 +56,15 @@ export default {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
+    '@nuxtjs/auth-next',
   ],
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {},
+  axios: {
+    baseURL: 'http://localhost:8000/api',
+  },
   /*
    ** Build configuration
    ** See https://nuxtjs.org/api/configuration-build/
@@ -74,5 +77,36 @@ export default {
         },
       },
     },
+  },
+  // Auth module middleware
+  router: {
+    middleware: ['auth'],
+  },
+  auth: {
+    strategies: {
+      local: {
+        token: {
+          property: 'token',
+          // required: true,
+          // type: 'Bearer'
+        },
+        user: {
+          property: 'user',
+          // autoFetch: false,
+        },
+        endpoints: {
+          login: { url: '/login', method: 'post' },
+          logout: { url: '/logout', method: 'get' },
+          user: { url: '/user', method: 'get' },
+          // user: false,
+        },
+      },
+    },
+    redirect: {
+      login: '/login', // User will be redirected to this path if login is required.
+      home: '/', // User will be redirect to this path after login. (rewriteRedirects will rewrite this path)
+      logout: '/login', // User will be redirected to this path if after logout, current route is protected.
+    },
+    rewriteRedirects: true,
   },
 }
