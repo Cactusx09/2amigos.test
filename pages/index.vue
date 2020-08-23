@@ -3,7 +3,8 @@
     div(v-if="$auth.loggedIn")
       h1 WOW!!!
       div {{ $auth.user }}
-      button(@click="crateNote") create note
+      note-list
+      button(@click="createNote") create note
       button(@click="logout") logout
     div(v-else)
       nuxt-link(to="sign-up") sign up
@@ -11,18 +12,14 @@
 </template>
 
 <script>
+import NoteList from '~/components/NoteList'
+
 export default {
+  components: { NoteList },
   data() {
     return {
       error: null,
     }
-  },
-  // mounted() {
-  //   this.$auth.fetchUser()
-  //   debugger
-  // },
-  computed: {
-    // mapState: [...$auth.loggedIn]
   },
   methods: {
     async logout() {

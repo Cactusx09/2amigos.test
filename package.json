@@ -30,7 +30,7 @@
     "sqlite3": "^5.0.0",
     "swagger-jsdoc": "^4.0.0",
     "swagger-ui-express": "^4.1.4",
-    "vuex-persist": "^2.2.0"
+    "vue-quill-editor": "^3.0.6"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^3.1.0",
@@ -45,9 +45,11 @@
     "eslint-plugin-prettier": "^3.1.4",
     "express": "^4.17.1",
     "jest": "^26.1.0",
+    "node-sass": "^4.14.1",
     "prettier": "^2.0.5",
     "pug": "^3.0.0",
     "pug-plain-loader": "^1.0.0",
+    "sass-loader": "^9.0.3",
     "vue-jest": "^3.0.4"
   }
 }
