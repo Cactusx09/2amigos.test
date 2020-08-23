@@ -62,14 +62,28 @@ export default {
     }
   },
 
+  async created() {
+    const { data } = await this.$axios.get('/notes', {
+      params: {
+        userId: this.$auth.user.id,
+      },
+    })
+    this.notes = data.notes
+  },
+
   methods: {
-    addNote(content) {
+    async addNote(content) {
       this.notes.push({
         id: this.notes.length + 1,
         content,
       })
 
       this.newNoteContent = ''
+      const response = await this.$axios.post('/note', {
+        user: this.$auth.user.id,
+        content,
+      })
+      console.log(response)
     },
   },
 }
