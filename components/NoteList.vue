@@ -52,7 +52,7 @@ export default {
     return {
       notes: [],
       newNote: {
-        id: 1,
+        id: 0,
         x: 0,
         y: 0,
         width: 12,
@@ -101,17 +101,13 @@ export default {
         const items = data.notes.map((note) => ({
           ...JSON.parse(note.layout),
           id: note.id,
+          content: note.content,
         }))
         this.layout.items = items
       })
   },
 
   methods: {
-    moveEnd(e) {
-      console.log(e)
-
-      debugger
-    },
     async addNote() {
       // calculateHeight() {
       let maxY = 1
@@ -125,7 +121,13 @@ export default {
       const newLayout = { ...this.newNote, y: maxY + 1 }
       const { data } = await this.$axios.post('/note', {
         user: this.$auth.user.id,
-        layout: newLayout,
+        layout: {
+          x: this.newNote.x,
+          y: maxY + 1,
+          width: this.newNote.width,
+          height: this.newNote.height,
+        },
+        content: this.newNote.content,
       })
 
       this.layout.items.push({

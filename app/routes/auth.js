@@ -49,11 +49,11 @@ router.post(
   '/api/signup',
   // passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
-    const reqBody = req.body
-    const hashedPassword = await bcrypt.hash(reqBody.password, 12)
+    const { login, password } = req.body
+    const hashedPassword = await bcrypt.hash(password, 12)
     db.run(
       `INSERT INTO user (login, password) VALUES (?,?)`,
-      [reqBody.login, hashedPassword],
+      [login, hashedPassword],
       function (err, result) {
         if (err) {
           res.status(400).json({ error: err.message })
@@ -93,6 +93,7 @@ router.get('/api/user', (req, res, next) => {
       res.status(400).json({ error: err.message })
       return
     }
+    if (!row) return res.status(400).json({ error: 'User not find' })
     res.json({
       message: 'success',
       user: {
