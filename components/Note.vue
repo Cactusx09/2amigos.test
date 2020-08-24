@@ -4,8 +4,6 @@
       ref="editor"
       :content="data"
       :options="options"
-      @blur="onEditorBlur($event)"
-      @focus="onEditorFocus($event)"
       @change="onChange($event)"
     )
       #toolbar(slot="toolbar")
@@ -42,12 +40,6 @@ export default {
   methods: {
     onChange(editor) {
       this.$emit('update:data', editor.html)
-    },
-    onEditorBlur(editor) {
-      // this.content = this.data
-    },
-    onEditorFocus(editor) {
-      console.log('editor focus!', editor)
     },
   },
 }

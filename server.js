@@ -43,7 +43,7 @@ app.use(userRouter)
 const notesRouter = require('./app/routes/notes')
 app.use(notesRouter)
 
-const db = require('./app/configs/database.js')
+// const db = require('./app/configs/database.js')
 
 /**
  * @swagger

@@ -27,19 +27,16 @@ router.post(
   '/api/note',
   // passport.authenticate('jwt', { session: false }),
   (req, res, next) => {
-    const reqBody = req.body
-    console.log(req.body)
+    const { layout, user } = req.body
     db.run(
-      `INSERT INTO notes (content, user) VALUES (?,?)`,
-      [reqBody.content, reqBody.user],
+      `INSERT INTO notes (layout, user) VALUES (?,?)`,
+      [JSON.stringify(layout), user],
       function (err, result) {
         if (err) {
           res.status(400).json({ error: err.message })
           return
         }
-        res.status(201).json({
-          noteId: this.lastID,
-        })
+        res.status(201).json({ id: this.lastID })
       }
     )
   }
@@ -72,6 +69,45 @@ router.get(
         })
       }
     )
+  }
+)
+
+/**
+ * @swagger
+ * /api/notes/savePositions:
+ *  post:
+ *    description: Create new user
+ *    products:
+ *      - application/json
+ *    parameters:
+ *      - name: login
+ *        type: string
+ *        required: true
+ *        in: formData
+ *      - name: password
+ *        type: string
+ *        required: true
+ *        in: formData
+ *    responses:
+ *      '200':
+ *        description: User successfull created
+ */
+router.post(
+  '/api/notes/savePositions',
+  // passport.authenticate('jwt', { session: false }),
+  (req, res, next) => {
+    const { items } = req.body
+    items.forEach((item) => {
+      db.all(
+        'UPDATE notes SET layout = ? WHERE id = ?',
+        [JSON.stringify(item), item.id],
+        (err, row) => {
+          if (err) console.log(err)
+        }
+      )
+    })
+
+    res.status(201).json({ message: 'success' })
   }
 )
 
