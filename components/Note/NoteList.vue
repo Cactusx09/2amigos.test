@@ -111,7 +111,10 @@ export default {
   },
 
   methods: {
-    async addNote() {
+    onNoteBlur(e, item) {
+      console.log(e, item)
+    },
+    async onAddNote() {
       // calculateHeight() {
       let maxY = 1
       let bottomY = 0

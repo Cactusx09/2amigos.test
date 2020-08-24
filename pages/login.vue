@@ -20,8 +20,6 @@
       div
         button(type="submit") Submit
 
-      nuxt-link(to="signup") sign up
-
 </template>
 
 <script>
@@ -42,8 +40,6 @@ export default {
           data: this.login,
         })
         console.log(response)
-        // debugger
-        // this.$auth.setUser(response.data.user)
       } catch (err) {
         console.log(err)
         this.error = err

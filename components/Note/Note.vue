@@ -5,6 +5,7 @@
       :content="data"
       :options="options"
       @change="onChange($event)"
+      @blur="onBlur"
     )
       #toolbar(slot="toolbar")
         slot(
@@ -40,6 +41,9 @@ export default {
   methods: {
     onChange(editor) {
       this.$emit('update:data', editor.html)
+    },
+    onBlur() {
+      this.$emit('blur')
     },
   },
 }
