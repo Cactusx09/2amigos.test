@@ -1,10 +1,9 @@
 <template lang="pug">
-  div {{ error }}
+  div
     div(v-if="$auth.loggedIn")
       h1 WOW!!!
       div {{ $auth.user }}
       note-list
-      button(@click="createNote") create note
       button(@click="logout") logout
     div(v-else)
       nuxt-link(to="sign-up") sign up
@@ -27,12 +26,8 @@ export default {
         const logout = await this.$auth.logout()
         console.log(logout)
       } catch (error) {
-        debugger
         this.error = error
       }
-    },
-    createNote() {
-      console.log('lll')
     },
   },
 }

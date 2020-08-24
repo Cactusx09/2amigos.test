@@ -50,9 +50,7 @@ router.post(
   // passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
     const reqBody = req.body
-    console.log(req.body)
     const hashedPassword = await bcrypt.hash(reqBody.password, 12)
-    console.log(hashedPassword)
     db.run(
       `INSERT INTO user (login, password) VALUES (?,?)`,
       [reqBody.login, hashedPassword],
