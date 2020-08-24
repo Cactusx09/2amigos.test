@@ -18,8 +18,6 @@
 
       div
         button(type="submit") Submit
-
-      nuxt-link(to="login") login
 </template>
 
 <script>
