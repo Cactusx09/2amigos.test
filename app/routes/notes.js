@@ -27,10 +27,10 @@ router.post(
   '/api/note',
   // passport.authenticate('jwt', { session: false }),
   (req, res, next) => {
-    const { layout, user } = req.body
+    const { layout, content, user } = req.body
     db.run(
-      `INSERT INTO notes (layout, user) VALUES (?,?)`,
-      [JSON.stringify(layout), user],
+      `INSERT INTO notes (layout, content, user) VALUES (?, ?, ?)`,
+      [JSON.stringify(layout), content, user],
       function (err, result) {
         if (err) {
           res.status(400).json({ error: err.message })
@@ -98,9 +98,11 @@ router.post(
   (req, res, next) => {
     const { items } = req.body
     items.forEach((item) => {
+      const content = item.content
+      delete item.content
       db.all(
-        'UPDATE notes SET layout = ? WHERE id = ?',
-        [JSON.stringify(item), item.id],
+        'UPDATE notes SET (layout, content) = (?, ?) WHERE id = ?',
+        [JSON.stringify(item), content, item.id],
         (err, row) => {
           if (err) console.log(err)
         }
