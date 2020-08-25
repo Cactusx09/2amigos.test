@@ -30,15 +30,17 @@
                   button.ql-custom-button(@click="onAddNote(content)") Add Note
 
             dash-item.box.px-3.py-3(
-              v-for="item in layout.items"
+              v-for="(item, index) in layout.items"
               v-bind.sync="item"
               :key="item.id"
               @moveEnd="savePositions"
               @resizeEnd="savePositions"
             )
+              button.button(@click="saveNote(item)") Save
+              button.button(@click="deleteNote(item.id, index)") Delete
               note.note(
                 :data.sync="item.content"
-                @blur="onNoteBlur($event, item)"
+                @changed="saveNote(item)"
               )
 
 
@@ -89,10 +91,6 @@ export default {
     }
   },
 
-  // created() {
-
-  // },
-
   created() {
     this.$axios
       .get('/notes', {
@@ -111,9 +109,9 @@ export default {
   },
 
   methods: {
-    onNoteBlur(e, item) {
-      console.log(e, item)
-    },
+    // onNoteBlur(item) {
+    //   this.saveNote(item)
+    // },
     async onAddNote() {
       // calculateHeight() {
       let maxY = 1
@@ -122,10 +120,8 @@ export default {
         bottomY = item.y + item.height
         if (bottomY > maxY) maxY = bottomY
       }
-      //   return maxY * (this.rowHeight + this.margin.y) + this.margin.y
-      // }
       const newLayout = { ...this.newNote, y: maxY + 1 }
-      const { data } = await this.$axios.post('/note', {
+      const { data } = await this.$axios.post('/note/create', {
         user: this.$auth.user.id,
         layout: {
           x: this.newNote.x,
@@ -136,18 +132,33 @@ export default {
         content: this.newNote.content,
       })
 
-      this.layout.items.push({
-        ...newLayout,
-        id: data.id,
-      })
-      this.newNote.content = ''
+      if (data) {
+        this.layout.items.push({
+          ...newLayout,
+          id: data.id,
+        })
+        this.newNote.content = ''
+      }
     },
     async savePositions() {
-      const response = await this.$axios.post('/notes/savePositions', {
+      const response = await this.$axios.post('/notes/save', {
         user: this.$auth.user.id,
         items: this.layout.items,
       })
       console.log(response)
+    },
+    async saveNote(note) {
+      const response = await this.$axios.post('/note/save', {
+        id: note.id,
+        note,
+      })
+      console.log(response)
+    },
+    async deleteNote(id, index) {
+      const response = await this.$axios.post('/note/delete', { id })
+      if (response) {
+        this.layout.items.splice(index, 1)
+      }
     },
   },
 }
