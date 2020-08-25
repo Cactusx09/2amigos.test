@@ -29,7 +29,11 @@ export default {
   /*
    ** Global CSS
    */
-  css: ['quill/dist/quill.core.css', 'quill/dist/quill.snow.css'],
+  css: [
+    'quill/dist/quill.core.css',
+    'quill/dist/quill.snow.css',
+    'vue-croppa/dist/vue-croppa.css',
+  ],
   /*
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
@@ -37,6 +41,8 @@ export default {
   plugins: [
     { src: '~plugins/quill-editor', ssr: false },
     { src: '~plugins/dashboard-grid', ssr: false },
+    { src: '~plugins/image-uploader' },
+    { src: '~plugins/awesome-icons' },
   ],
   /*
    ** Auto import components
@@ -80,6 +86,7 @@ export default {
         },
       },
     },
+    transpile: [/^vue-awesome/],
   },
   // Auth module middleware
   router: {
