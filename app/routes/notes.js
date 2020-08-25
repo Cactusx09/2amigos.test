@@ -5,9 +5,9 @@ const db = require('../configs/database.js')
 
 /**
  * @swagger
- * /api/note:
+ * /api/note/create:
  *  post:
- *    description: Create new user
+ *    description: Create new note
  *    products:
  *      - application/json
  *    parameters:
@@ -24,7 +24,7 @@ const db = require('../configs/database.js')
  *        description: User successfull created
  */
 router.post(
-  '/api/note',
+  '/api/note/create',
   // passport.authenticate('jwt', { session: false }),
   (req, res, next) => {
     const { layout, content, user } = req.body
@@ -74,7 +74,7 @@ router.get(
 
 /**
  * @swagger
- * /api/notes/savePositions:
+ * /api/notes/save:
  *  post:
  *    description: Create new user
  *    products:
@@ -93,7 +93,7 @@ router.get(
  *        description: User successfull created
  */
 router.post(
-  '/api/notes/savePositions',
+  '/api/notes/save',
   // passport.authenticate('jwt', { session: false }),
   (req, res, next) => {
     const { items } = req.body
@@ -110,6 +110,76 @@ router.post(
     })
 
     res.status(201).json({ message: 'success' })
+  }
+)
+
+/**
+ * @swagger
+ * /api/note/save:
+ *  post:
+ *    description: Create new user
+ *    products:
+ *      - application/json
+ *    parameters:
+ *      - name: login
+ *        type: string
+ *        required: true
+ *        in: formData
+ *      - name: password
+ *        type: string
+ *        required: true
+ *        in: formData
+ *    responses:
+ *      '200':
+ *        description: User successfull created
+ */
+router.post(
+  '/api/note/save',
+  // passport.authenticate('jwt', { session: false }),
+  (req, res, next) => {
+    const { note } = req.body
+    const content = note.content
+    delete note.content
+    db.run(
+      'UPDATE notes SET (layout, content) = (?, ?) WHERE id = ?',
+      [JSON.stringify(note), content, note.id],
+      (err, row) => {
+        if (err) console.log(err)
+        res.status(201).json({ message: 'success' })
+      }
+    )
+  }
+)
+
+/**
+ * @swagger
+ * /api/note/delete:
+ *  post:
+ *    description: Create new user
+ *    products:
+ *      - application/json
+ *    parameters:
+ *      - name: login
+ *        type: string
+ *        required: true
+ *        in: formData
+ *      - name: password
+ *        type: string
+ *        required: true
+ *        in: formData
+ *    responses:
+ *      '200':
+ *        description: User successfull created
+ */
+router.post(
+  '/api/note/delete',
+  // passport.authenticate('jwt', { session: false }),
+  (req, res, next) => {
+    const { id } = req.body
+    db.run('DELETE FROM notes WHERE id = ?', id, (err, row) => {
+      if (err) return console.log(err)
+      res.status(201).json({ message: 'success' })
+    })
   }
 )
 

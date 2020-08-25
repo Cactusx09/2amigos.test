@@ -4,8 +4,7 @@
       ref="editor"
       :content="data"
       :options="options"
-      @change="onChange($event)"
-      @blur="onBlur"
+      @change="$emit('update:data', $event.html); onChange($event)"
     )
       #toolbar(slot="toolbar")
         slot(
@@ -15,6 +14,8 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
 export default {
   props: {
     data: {
@@ -39,12 +40,12 @@ export default {
   },
 
   methods: {
-    onChange(editor) {
-      this.$emit('update:data', editor.html)
-    },
-    onBlur() {
-      this.$emit('blur')
-    },
+    onChange: _.debounce(function () {
+      this.$emit('changed')
+    }, 2000),
+    // onBlur() {
+    //   this.$emit('blur')
+    // },
   },
 }
 </script>
