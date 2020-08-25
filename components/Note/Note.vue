@@ -25,36 +25,22 @@
         loading-color="#606060"
       )
 
-      .note__buttons
+      .note__buttons.px-1.py-1
         slot(name="buttons")
 
         template(v-if="!newNote")
-          button.button(@click="deleteNote")
-            span.icon
-              v-icon(
-                name="trash"
-              )
-          button.button(v-show="!croppaOptions.isActive")
-            span.icon
-              v-icon
-                v-icon(
-                  name="expand"
-                  :scale="1.6"
-                )
-                v-icon(
-                  name="pen"
-                  :scale="0.8"
-                )
-          button.button(@click="activateCroppa")
-            span.icon
-              v-icon(
-                name="image"
-              )
-          button.button(v-show="!croppaOptions.isActive")
-            span.icon
-              v-icon(
-                name="palette"
-              )
+          span.icon.mx-2(@click="activateCroppa")
+            v-icon(
+              name="image"
+            )
+          span.icon.mx-2(v-show="!croppaOptions.isActive")
+            v-icon(
+              name="palette"
+            )
+          span.icon.mx-2(@click="deleteNote")
+            v-icon(
+              name="trash"
+            )
 </template>
 
 <script>
@@ -70,10 +56,6 @@ export default {
       type: String,
       default: '',
     },
-    toolbarOptions: {
-      type: [String, Array, Boolean],
-      default: false,
-    },
     newNote: {
       type: Boolean,
       default: false,
@@ -83,9 +65,27 @@ export default {
   data() {
     return {
       quillOptions: {
-        theme: 'snow',
+        theme: this.newNote ? 'snow' : 'bubble',
         modules: {
-          toolbar: this.toolbarOptions,
+          toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+            [{ header: 1 }, { header: 2 }],
+            [],
+            [{ script: 'sub' }, { script: 'super' }],
+            [{ size: ['small', false, 'large', 'huge'] }],
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            [{ font: [] }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            [],
+            [{ color: [] }, { background: [] }],
+            [],
+            [{ align: [] }],
+            [],
+            ['clean'],
+            [],
+            ['link', 'image', 'video'],
+          ],
         },
       },
       croppa: null,
@@ -142,6 +142,25 @@ export default {
 }
 </script>
 
+<style lang="sass">
+.note
+  &:hover
+    .ql-editor
+      padding-top: 2rem
+  .ql
+    &-editor
+      transition: .2s
+    &-container.ql-snow
+      border: none
+    &-tooltip
+      min-width: 330px
+      max-width: 330px
+      z-index: 7
+      border-radius: 0.375rem
+    &-bubble .ql-toolbar .ql-formats
+      margin: 0.25rem
+</style>
+
 <style lang="sass" scoped>
 .note
   position: absolute
@@ -151,6 +170,11 @@ export default {
   height: 100%
   display: flex
   align-items: stretch
+  &:hover
+    z-index: 5
+    .note__buttons
+      opacity: 1
+      // transform: translateX(calc(-100% + 5px)) scale(1)
   &__editor
     width: 100%
     display: flex
@@ -162,17 +186,31 @@ export default {
     left: 0
     z-index: 3
   &__buttons
+    opacity: 0
+    // background-color: #fff
     position: absolute
     top: 0
-    right: 0
-    height: 100%
+    left: 0
+    width: 100%
     display: flex
-    flex-direction: column
-    justify-content: flex-end
-    transform: translateX(50%)
+    justify-content: center
+    // transform: translateY(-50%) scale(.8)
+    // transform: translateY(-50%)
+    transition: opacity .5s, transform .2s
     z-index: 5
-    .button
-      border-radius: 50%
+    &::before
+      content: ''
+      position: absolute
+      left: 0
+      top: 0
+      width: 100%
+      height: 105%
+      background: #fff
+      background: linear-gradient(180deg, rgba(#fff,1) 0%, rgba(#fff,0.8) 75%, rgba(#fff,0) 100%)
+      z-index: -1
+    .icon
+      cursor: pointer
+
 // .quill-editor
 //   min-height: 200px
 //   max-height: 400px

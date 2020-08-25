@@ -32,6 +32,7 @@ export default {
   css: [
     'quill/dist/quill.core.css',
     'quill/dist/quill.snow.css',
+    'quill/dist/quill.bubble.css',
     'vue-croppa/dist/vue-croppa.css',
   ],
   /*

@@ -3,7 +3,7 @@
       client-only
         dashboard#dahboard
           dash-layout(v-bind="layout")
-            dash-item.box.px-0.py-0.new-note(
+            dash-item.box.new-note(
               v-bind.sync="newNote"
               :key="newNote.id"
               :draggable="false"
@@ -11,7 +11,6 @@
             )
               note(
                 :data.sync="newNote.content"
-                :toolbarOptions="toolbarOptions.extended"
                 @on-add="addNote"
                 new-note
               )
@@ -21,14 +20,16 @@
                     name="plus"
                   )
 
-            dash-item.box.px-0.py-0(
+            dash-item.box(
               v-for="(item, index) in layout.items"
               v-bind.sync="item"
               :key="item.id"
               @moveEnd="savePositions"
               @resizeEnd="savePositions"
+              :minWidth="2"
+              resizeEdges="left top bottom right",
             )
-              note.note(
+              note(
                 :id="item.id"
                 :data.sync="item.content"
                 @changed="saveNote(item)"
@@ -59,25 +60,6 @@ export default {
         breakpoint: 'xl',
         numberOfCols: 12,
         items: [],
-      },
-      toolbarOptions: {
-        custom: '#toolbar',
-        extended: [
-          ['bold', 'italic', 'underline', 'strike'],
-          ['blockquote', 'code-block'],
-          [{ header: 1 }, { header: 2 }],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          [{ script: 'sub' }, { script: 'super' }],
-          [{ indent: '-1' }, { indent: '+1' }],
-          [{ size: ['small', false, 'large', 'huge'] }],
-          [{ header: [1, 2, 3, 4, 5, 6, false] }],
-          [{ font: [] }],
-          [{ color: [] }, { background: [] }],
-          [{ align: [] }],
-          ['clean'],
-          ['link', 'image', 'video'],
-          ['custom'],
-        ],
       },
     }
   },
@@ -141,6 +123,8 @@ export default {
 <style lang="sass">
 .new-note
   position: relative
+  z-index: 3
+  padding-bottom: 2rem
   .button
     position: absolute
     left: 50%
