@@ -1,6 +1,6 @@
 {
   "name": "2amigos.test",
-  "main": "server.js",
+  "main": "app.js",
   "version": "1.0.0",
   "private": true,
   "repository": "https://github.com/Cactusx09/2amigos.test",
