@@ -7,7 +7,7 @@
   "author": "trg",
   "license": "MIT",
   "scripts": {
-    "dev": "nuxt",
+    "dev": "nuxt && node app.js",
     "build": "nuxt build",
     "start": "node app.js",
     "generate": "nuxt generate",
