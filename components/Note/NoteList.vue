@@ -3,44 +3,38 @@
       client-only
         dashboard#dahboard
           dash-layout(v-bind="layout")
-            dash-item.box.px-3.py-3(
+            dash-item.box.new-note(
               v-bind.sync="newNote"
               :key="newNote.id"
-              :resize="false"
               :draggable="false"
+              locked
             )
               note(
                 :data.sync="newNote.content"
-                :toolbarOptions="toolbarOptions.custom"
+                @on-add="addNote"
+                new-note
               )
-                template(#toolbar="{ content }")
-                  button.ql-bold Bold
-                  button.ql-italic Italic
-                  select.ql-size
-                    option(value="small")
-                    option(selected)
-                    option(value="large")
-                    option(value="huge")
-                  select.ql-font
-                    option(selected="selected")
-                    option(value="serif")
-                    option(value="monospace")
-                  button.ql-script(value="sub")
-                  button.ql-script(value="super")
-                  button.ql-custom-button(@click="onAddNote(content)") Add Note
+              button.button(@click="addNote")
+                span.icon
+                  v-icon(
+                    name="plus"
+                  )
 
-            dash-item.box.px-3.py-3(
+            dash-item.box(
               v-for="(item, index) in layout.items"
               v-bind.sync="item"
               :key="item.id"
               @moveEnd="savePositions"
               @resizeEnd="savePositions"
+              :minWidth="2"
+              resizeEdges="left top bottom right",
             )
-              button.button(@click="saveNote(item)") Save
-              button.button(@click="deleteNote(item.id, index)") Delete
-              note.note(
+              note(
+                v-bind.sync="item"
                 :data.sync="item.content"
                 @changed="saveNote(item)"
+                @delete="layout.items.splice(index, 1)"
+                @image-load="item.image = $event"
               )
 
 
@@ -55,7 +49,6 @@ export default {
 
   data() {
     return {
-      notes: [],
       newNote: {
         id: 0,
         x: 0,
@@ -63,25 +56,6 @@ export default {
         width: 12,
         height: 2,
         content: '',
-      },
-      toolbarOptions: {
-        custom: '#toolbar',
-        extended: [
-          ['bold', 'italic', 'underline', 'strike'],
-          ['blockquote', 'code-block'],
-          [{ header: 1 }, { header: 2 }],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          [{ script: 'sub' }, { script: 'super' }],
-          [{ indent: '-1' }, { indent: '+1' }],
-          [{ direction: 'rtl' }],
-          [{ size: ['small', false, 'large', 'huge'] }],
-          [{ header: [1, 2, 3, 4, 5, 6, false] }],
-          [{ font: [] }],
-          [{ color: [] }, { background: [] }],
-          [{ align: [] }],
-          ['clean'],
-          ['link', 'image', 'video'],
-        ],
       },
       layout: {
         breakpoint: 'xl',
@@ -103,29 +77,19 @@ export default {
           ...JSON.parse(note.layout),
           id: note.id,
           content: note.content,
+          image: note.image,
         }))
         this.layout.items = items
       })
   },
 
   methods: {
-    // onNoteBlur(item) {
-    //   this.saveNote(item)
-    // },
-    async onAddNote() {
-      // calculateHeight() {
-      let maxY = 1
-      let bottomY = 0
-      for (const item of this.layout.items) {
-        bottomY = item.y + item.height
-        if (bottomY > maxY) maxY = bottomY
-      }
-      const newLayout = { ...this.newNote, y: maxY + 1 }
+    async addNote() {
       const { data } = await this.$axios.post('/note/create', {
         user: this.$auth.user.id,
         layout: {
           x: this.newNote.x,
-          y: maxY + 1,
+          y: this.newNote.y,
           width: this.newNote.width,
           height: this.newNote.height,
         },
@@ -134,7 +98,7 @@ export default {
 
       if (data) {
         this.layout.items.push({
-          ...newLayout,
+          ...this.newNote,
           id: data.id,
         })
         this.newNote.content = ''
@@ -154,25 +118,21 @@ export default {
       })
       console.log(response)
     },
-    async deleteNote(id, index) {
-      const response = await this.$axios.post('/note/delete', { id })
-      if (response) {
-        this.layout.items.splice(index, 1)
-      }
-    },
   },
 }
 </script>
 
 <style lang="sass">
-.packery-item
-  width: 33.3333%
-  &.is-dragging,
-  &.is-positioning-post-drag
-    background: #EA0
-    z-index: 2
-.packery-drop-placeholder
-  outline: 3px dashed #444
-  outline-offset: -6px
-  transition: transform 0.2s
+.new-note
+  position: relative
+  z-index: 3
+  padding-bottom: 32px
+  background: transparent
+  .button
+    position: absolute
+    left: 50%
+    bottom: 0
+    transform: translate(-50%, 50%)
+    border-radius: 50%
+    z-index: 10
 </style>

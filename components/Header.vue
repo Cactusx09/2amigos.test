@@ -1,5 +1,5 @@
 <template lang="pug">
-  header
+  header.box.py-1
     nav.navbar
       .navbar-brand
         .navbar-item
@@ -10,11 +10,11 @@
         .navbar-item
           .buttons
             template(v-if="!$auth.user")
-              nuxt-link.button(to="signup") sign up
-              nuxt-link.button(to="login") login
+              nuxt-link.button.is-small.is-primary(to="signup") sign up
+              nuxt-link.button.is-small.is-success.is-light(to="login") login
             template(v-else)
-              span Hi, #[b {{ $auth.user.login }}]! Let's note!
-              button.button(@click="logout") logout
+              p.mb-1 Hi, #[b {{ $auth.user.login }}]! Let's note!
+              button.button.is-small.is-danger.is-light.ml-4(@click="logout") logout
 </template>
 
 <script>

@@ -88,3 +88,6 @@ sw.*
 
 # Vim swap files
 *.swp
+app/uploads
+app/db.sqlite
+static/uploads

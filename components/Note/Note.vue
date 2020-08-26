@@ -1,16 +1,97 @@
 <template lang="pug">
   client-only
-    quill-editor(
-      ref="editor"
-      :content="data"
-      :options="options"
-      @change="$emit('update:data', $event.html); onChange($event)"
+    div.note(
+      :style="`background-image: url('/${image}')`"
+      :class="[{ 'new-item': newNote }, { 'is-active-img': croppaOptions.isActive }]"
     )
-      #toolbar(slot="toolbar")
-        slot(
-          name="toolbar"
-          :content="data"
-        )
+      quill-editor.note__editor(
+        ref="editor"
+        :content="data"
+        :options="quillOptions"
+        @change="$emit('update:data', $event.html); onChange($event)"
+        @focus="onFocus($event)"
+      )
+
+      croppa.note__image(
+        v-if="croppaOptions.isActive"
+        v-model="croppa"
+        :width="croppaOptions.width"
+        :height="croppaOptions.height"
+        placeholder="Drag image or click"
+        placeholder-color="#000"
+        prevent-white-space
+        accept="image/jpeg,image/png"
+        :placeholder-font-size="15"
+        canvas-color="transparent"
+        :show-remove-button="false"
+        show-loading
+        :loading-size="50"
+        loading-color="#606060"
+        @new-image="croppaOptions.isUploaded = true"
+        ref="croppa"
+      )
+
+      .note__buttons.px-1.py-1
+        slot(name="buttons")
+
+        template(v-if="!newNote & !croppaOptions.isActive")
+          span.icon.mx-2(@click="activateCroppa")
+            v-icon(
+              name="image"
+            )
+          span.icon.mx-2
+            v-icon(
+              name="palette"
+            )
+          span.icon.mx-2(@click="deleteNote")
+            v-icon(
+              name="trash"
+            )
+        template(v-if="croppaOptions.isActive")
+          template(v-if="croppaOptions.isUploaded")
+            span.icon(@click="croppa.rotate(1)")
+              v-icon(
+                flip="horizontal"
+                name="redo"
+              )
+            span.icon.ml-2.mr-4(@click="croppa.rotate(-1)")
+              v-icon(
+                name="redo"
+              )
+            span.icon.ml-3.mr-2(
+              v-if="croppaOptions.isUploaded"
+              @click="loadImage"
+            )
+              v-icon(
+                name="check"
+              )
+
+          span.icon.mr-3.ml-2(
+            v-if="croppaOptions.isUploaded"
+            @click="croppaOptions.isUploaded = false; croppa.remove()"
+          )
+            v-icon(
+              name="times"
+            )
+          span.icon.mr-3.ml-2(
+            v-else
+            @click="croppaOptions.isActive = false"
+          )
+            v-icon(
+              name="times"
+            )
+
+          template(v-if="croppaOptions.isUploaded")
+            span.icon.ml-4.mr-2(@click="croppa.flipX()")
+              v-icon(
+                flip="horizontal"
+                name="arrows-alt-h"
+              )
+            span.icon(@click="croppa.flipY()")
+              v-icon(
+                name="arrows-alt-v"
+              )
+
 </template>
 
 <script>
@@ -18,45 +99,226 @@ import _ from 'lodash'
 
 export default {
   props: {
+    id: {
+      type: Number,
+      default: 0,
+    },
+    image: {
+      type: String,
+      default: '',
+    },
     data: {
       type: String,
       default: '',
     },
-    toolbarOptions: {
-      type: [String, Array, Boolean],
+    newNote: {
+      type: Boolean,
       default: false,
     },
   },
 
   data() {
     return {
-      options: {
-        theme: 'snow',
+      quillOptions: {
+        theme: this.newNote ? 'snow' : 'bubble',
         modules: {
-          toolbar: this.toolbarOptions,
+          toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+            [{ header: 1 }, { header: 2 }],
+            [],
+            [{ script: 'sub' }, { script: 'super' }],
+            [{ size: ['small', false, 'large', 'huge'] }],
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            [{ font: [] }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            [],
+            [{ color: [] }, { background: [] }],
+            [],
+            [{ align: [] }],
+            [],
+            ['clean'],
+            [],
+            ['link', 'image', 'video'],
+          ],
         },
+      },
+      croppa: null,
+      croppaOptions: {
+        isActive: false,
+        isUploaded: false,
+        width: null,
+        height: null,
       },
     }
   },
 
   methods: {
-    onChange: _.debounce(function () {
+    async deleteNote() {
+      await this.$axios.post('/note/delete', {
+        id: this.id,
+      })
+      await this.$emit('delete')
+    },
+    activateCroppa() {
+      const { offsetWidth, offsetHeight } = this.$el.offsetParent
+      this.croppaOptions.isActive = true
+      this.croppaOptions.width = offsetWidth
+      this.croppaOptions.height = offsetHeight
+    },
+    onFocus(event) {
+      // this.options = {
+      //   theme: 'snow',
+      //   modules: {
+      //     toolbar: [
+      //       ['bold', 'italic', 'underline', 'strike'],
+      //       ['blockquote', 'code-block'],
+      //       [{ header: 1 }, { header: 2 }],
+      //       [{ list: 'ordered' }, { list: 'bullet' }],
+      //       [{ script: 'sub' }, { script: 'super' }],
+      //       [{ indent: '-1' }, { indent: '+1' }],
+      //       [{ direction: 'rtl' }],
+      //       [{ size: ['small', false, 'large', 'huge'] }],
+      //       [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      //       [{ font: [] }],
+      //       [{ color: [] }, { background: [] }],
+      //       [{ align: [] }],
+      //       ['clean'],
+      //       ['link', 'image', 'video'],
+      //     ],
+      //   },
+      // }
+      // debugger
+    },
+    async loadImage() {
+      const blob = await this.croppa.promisedBlob()
+      // debugger
+      const formData = new FormData()
+      formData.append('data', blob)
+      formData.append('noteId', this.id)
+
+      const { data } = await this.$axios.post('/image/save', formData, {
+        header: { 'Content-Type': 'multipart/form-data' },
+      })
+
+      this.$emit('image-load', data.path)
+
+      this.croppa.remove()
+      this.croppaOptions.isActive = false
+    },
+    onChange: _.debounce(function (editor) {
       this.$emit('changed')
-    }, 2000),
-    // onBlur() {
-    //   this.$emit('blur')
-    // },
+    }, 1000),
   },
 }
 </script>
 
+<style lang="sass">
+.note
+  &:not(.new-item):hover
+    .ql-editor
+      padding-top: 2rem
+  .ql
+    &-editor
+      transition: .2s
+      border-radius: 0.375rem
+    &-container.ql-snow
+      border-radius: 0.375rem
+      border: none
+    &-toolbar.ql-snow
+      border: none
+      box-shadow: 0px 8px 14px -8px rgba(#000, 0.1)
+    &-tooltip
+      min-width: 330px
+      max-width: 330px
+      z-index: 7
+      border-radius: 0.375rem
+    &-bubble .ql-toolbar .ql-formats
+      margin: 0.25rem
+</style>
+
 <style lang="sass" scoped>
-.container
-  width: 60%
-  margin: 0 auto
-  padding: 50px 0
-  .quill-editor
-    min-height: 200px
-    max-height: 400px
-    overflow-y: auto
+.note
+  position: absolute
+  left: 0
+  top: 0
+  width: 100%
+  height: 100%
+  display: flex
+  align-items: stretch
+  z-index: 0
+  background-position: center
+  background-size: cover
+  background-repeat: no-repeat
+  border-radius: 0.375rem
+  &::before
+    content: ''
+    position: absolute
+    left: 0
+    top: 0
+    width: 100%
+    height: 100%
+    opacity: 0.8
+    pointer-events: none
+    background: #fff
+    z-index: -1
+    border-radius: 0.375rem
+  &:hover
+    z-index: 5
+    .note__buttons
+      opacity: 1
+      transform: none
+      .icon
+        transform: none
+  &.is-active-img
+    .note__buttons
+      opacity: 1
+      &::before
+        opacity: 0.9
+        background: linear-gradient(180deg, rgba(#e6e6e6,0.9) 0%, rgba(#e6e6e6,0.6) 55%, rgba(#e6e6e6,0) 100%)
+
+  &__editor
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: stretch
+  &__image
+    position: absolute
+    top: 0
+    left: 0
+    z-index: 3
+    &:hover
+      opacity: 0.92
+  &__buttons
+    opacity: 0
+    // background-color: #fff
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    display: flex
+    justify-content: center
+    transform: translateY(-50%)
+    transition: opacity .5s, transform .2s
+    z-index: 5
+    &::before
+      content: ''
+      position: absolute
+      left: 0
+      top: 0
+      width: 100%
+      height: 105%
+      background: #fff
+      background: linear-gradient(180deg, rgba(#fff,1) 0%, rgba(#fff,0.8) 75%, rgba(#fff,0) 100%)
+      border-radius: 0.375rem
+      z-index: -1
+    .icon
+      cursor: pointer
+      transform: translateY(80%) scale(0.8)
+      transition: 0.2s
+
+// .quill-editor
+//   min-height: 200px
+//   max-height: 400px
+//   overflow-y: auto
 </style>
