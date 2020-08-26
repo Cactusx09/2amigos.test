@@ -10,7 +10,7 @@
     },
     {
       "src": "nuxt.config.js",
-      "use": "@nuxtjs/now-builder"
+      "use": "@nuxtjs/vercel-builder"
     }
   ],
   "routes": [
