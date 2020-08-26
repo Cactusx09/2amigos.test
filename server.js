@@ -1,5 +1,8 @@
 const express = require('express')
 const app = express()
+
+const dotenv = require('dotenv')
+dotenv.config()
 const port = process.env.PORT
 
 const cors = require('cors')
@@ -91,81 +94,6 @@ app.use(userRouter)
 const notesRouter = require('./app/routes/notes')
 app.use(notesRouter)
 
-// const db = require('./app/configs/database.js')
-
-/**
- * @swagger
- * /:
- *  get:
- *    description: Main route
- *    responses:
- *      200':
- *        description: A successful response
- */
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
-/**
- * @swagger
- * /api/users:
- *  get:
- *    description: Select users
- *    responses:
- *      '200':
- *        description: Select users from user
- */
-// app.get(
-//   '/api/users',
-//   // passport.authenticate('jwt', { session: false }),
-//   (req, res, next) => {
-//     const sql = 'SELECT * FROM user'
-//     const params = []
-//     db.all(sql, params, (err, rows) => {
-//       if (err) {
-//         res.status(400).json({ error: err.message })
-//         return
-//       }
-//       res.json({
-//         message: 'success',
-//         data: rows,
-//       })
-//     })
-//   }
-// )
-
-/**
- * @swagger
- * /api/user/:id:
- *  get:
- *    description: Select users
- *    parameters:
- *      - name: id
- *        type: integer
- *        required: true
- *        in: path
- *    responses:
- *      '200':
- *        description: Select users from user
- */
-// app.get('/api/user/:id', (req, res, next) => {
-//   const sql = 'SELECT * FROM user WHERE id = ?'
-//   const params = [req.params.id]
-//   db.get(sql, params, (err, row) => {
-//     if (err) {
-//       res.status(400).json({ error: err.message })
-//       return
-//     }
-//     console.log(row)
-//     res.json({
-//       message: 'success',
-//       data: row,
-//     })
-//   })
-// })
-
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
-
-// console.log(app._router.stack)
