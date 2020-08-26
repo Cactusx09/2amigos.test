@@ -74,8 +74,6 @@ export default {
    */
   axios: {
     baseURL: `${process.env.BASE_URL}:${process.env.PORT}/${process.env.API_PREFIX}`,
-    // port: process.env.API_PORT,
-    // prefix: process.env.API_PREFIX,
   },
   /*
    ** Build configuration
