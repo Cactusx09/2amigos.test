@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 8000
+const port = process.env.PORT
 
 const cors = require('cors')
 app.use(cors())
@@ -14,7 +14,7 @@ const swaggerDocs = swaggerJsDoc({
     contact: {
       name: 'trg',
     },
-    servers: ['http://localhost:8000'],
+    servers: [`http://localhost:${port}`],
   },
   apis: ['server.js'],
 })
