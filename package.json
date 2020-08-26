@@ -6,6 +6,9 @@
   "repository": "https://github.com/Cactusx09/2amigos.test",
   "author": "trg",
   "license": "MIT",
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
