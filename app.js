@@ -1,5 +1,3 @@
-const path = require('path')
-
 const express = require('express')
 const app = express()
 
@@ -9,6 +7,20 @@ const port = process.env.PORT || 8080
 
 const cors = require('cors')
 app.use(cors())
+
+const { loadNuxt, build } = require('nuxt')
+
+const isDev = process.env.NODE_ENV !== 'production'
+async function start() {
+  const nuxt = await loadNuxt(isDev ? 'dev' : 'start')
+  app.use(nuxt.render)
+
+  if (isDev) {
+    build(nuxt)
+  }
+}
+
+start()
 
 const swaggerUi = require('swagger-ui-express')
 const swaggerJsDoc = require('swagger-jsdoc')
@@ -24,8 +36,6 @@ const swaggerDocs = swaggerJsDoc({
   apis: ['app.js'],
 })
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
-
-app.use(express.static(path.join(__dirname, 'dist')))
 
 const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
@@ -57,10 +67,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 const db = require('./app/configs/database.js')
-
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
 /**
  * @swagger
  * /api/image/save:
