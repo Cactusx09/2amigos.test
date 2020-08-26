@@ -19,7 +19,7 @@ const swaggerDocs = swaggerJsDoc({
     },
     servers: [`http://localhost:${port}`],
   },
-  apis: ['server.js'],
+  apis: ['app.js'],
 })
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
@@ -99,5 +99,5 @@ const notesRouter = require('./app/routes/notes')
 app.use(notesRouter)
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+  console.log(`Example app listening at ${port}`)
 })
