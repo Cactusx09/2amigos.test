@@ -3,7 +3,7 @@ const app = express()
 
 const dotenv = require('dotenv')
 dotenv.config()
-const port = process.env.PORT || 8080
+const port = process.env.API_PORT || 8080
 
 const cors = require('cors')
 app.use(cors())
@@ -53,6 +53,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 const db = require('./app/configs/database.js')
+
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
 /**
  * @swagger
  * /api/image/save:

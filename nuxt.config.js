@@ -73,7 +73,7 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    baseURL: `http://localhost:${process.env.PORT}/api`,
+    baseURL: `http://localhost:${process.env.API_PORT || 3030}/api`,
   },
   /*
    ** Build configuration
