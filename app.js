@@ -1,3 +1,5 @@
+const path = require('path')
+
 const express = require('express')
 const app = express()
 
@@ -22,6 +24,8 @@ const swaggerDocs = swaggerJsDoc({
   apis: ['app.js'],
 })
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+
+app.use(express.static(path.join(__dirname, 'dist')))
 
 const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
