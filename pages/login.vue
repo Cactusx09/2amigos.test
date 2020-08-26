@@ -1,25 +1,37 @@
 <template lang="pug">
-  div
-    .error {{ error }}
-    h2 Login
-    form(@submit.prevent="userLogin")
-      div
-        label Username
-        input(
-          v-model="login.login"
-          type="text"
-        )
+  div.section
+    .container
+      .columns
+        .column.is-one-third.is-offset-one-third
+          //- .error {{ error }}
+          h1.title.has-text-centered Login
+          form(@submit.prevent="userLogin")
+            .field.my-5
+              label.label Username
+              .control.has-icons-left.has-icons-right
+                input.input(
+                  v-model="login.login"
+                  type='text'
+                )
+                span.icon.is-small.is-left
+                  v-icon(name="user")
+                //- span.icon.is-small.is-right
+              //- p.help.is-success This username is available
+            .field
+              label.label Password
+              .control.has-icons-left.has-icons-right
+                input.input(
+                  v-model="login.password"
+                  type="password"
+                )
+                span.icon.is-small.is-left
+                  v-icon(name="envelope")
+                //- span.icon.is-small.is-right
+              //- p.help.is-danger This email is invalid
 
-      div
-        label Password
-        input(
-          v-model="login.password"
-          type="text"
-        )
-
-      div
-        button(type="submit") Submit
-
+            .columns.pt-4
+              .column
+                button.button.is-medium.is-success.is-fullwidth(type="submit") Submit
 </template>
 
 <script>

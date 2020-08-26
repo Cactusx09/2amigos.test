@@ -30,10 +30,11 @@
               resizeEdges="left top bottom right",
             )
               note(
-                :id="item.id"
+                v-bind.sync="item"
                 :data.sync="item.content"
                 @changed="saveNote(item)"
                 @delete="layout.items.splice(index, 1)"
+                @image-load="item.image = $event"
               )
 
 
@@ -76,6 +77,7 @@ export default {
           ...JSON.parse(note.layout),
           id: note.id,
           content: note.content,
+          image: note.image,
         }))
         this.layout.items = items
       })
@@ -124,11 +126,13 @@ export default {
 .new-note
   position: relative
   z-index: 3
-  padding-bottom: 2rem
+  padding-bottom: 32px
+  background: transparent
   .button
     position: absolute
     left: 50%
     bottom: 0
     transform: translate(-50%, 50%)
     border-radius: 50%
+    z-index: 10
 </style>

@@ -30,6 +30,7 @@ const db = new sqlite3.Database(DBSOURCE, (err) => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         layout text,
         content text,
+        image text,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         user INTEGER,
         FOREIGN KEY(user) REFERENCES user(id)
