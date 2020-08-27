@@ -201,7 +201,7 @@ export default {
         header: { 'Content-Type': 'multipart/form-data' },
       })
 
-      this.$emit('image-load', data.path)
+      await this.$emit('update:image', data.path)
 
       this.croppa.remove()
       this.croppaOptions.isActive = false
