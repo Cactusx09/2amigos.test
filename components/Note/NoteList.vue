@@ -7,7 +7,6 @@
               v-bind.sync="newNote"
               :key="newNote.id"
               :draggable="false"
-              locked
             )
               note(
                 :content.sync="newNote.content"
@@ -27,6 +26,7 @@
               @moveEnd="savePositions"
               @resizeEnd="savePositions"
               :minWidth="2"
+              :draggable="item.draggable"
               resizeEdges="left top bottom right",
             )
               note(
@@ -34,6 +34,8 @@
                 @text-changed="saveNote(item)"
                 @color-changed="saveNote(item)"
                 @delete="layout.items.splice(index, 1)"
+                @enable-drag="item.draggable = true"
+                @disable-drag="item.draggable = false"
               )
 
 
@@ -80,6 +82,7 @@ export default {
           content: note.content,
           imageUrl: note.imageUrl,
           color: note.color,
+          draggable: true,
         }))
         this.layout.items = items
       })

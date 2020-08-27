@@ -30,14 +30,35 @@
         ref="croppa"
       )
 
-      .note__buttons.px-1.py-1
+      .note__buttons.px-1.py-1(
+        @mouseover="$emit('enable-drag')"
+        @mouseleave="$emit('disable-drag')"
+      )
         slot(name="buttons")
 
         template(v-if="!newNote & !croppaOptions.isActive")
+          span.icon.mx-2(v-if="imageUrl || color")
+            v-icon(
+              name="opacity"
+              :scale="1.2"
+            )
+          //- input.slider.is-fullwidth(
+          //-   step='1'
+          //-   min='0'
+          //-   max='100'
+          //-   value='50'
+          //-   type='range'
+          //- )
           span.icon.mx-2(@click="activateCroppa()")
             v-icon(
               name="image"
             )
+
+          span.note__buttons_resize.icon.mx-2
+            v-icon(
+              name="arrows-alt"
+            )
+
           span.icon.mx-2
             v-swatches(
               @input="onColorChanged($event)"
@@ -51,6 +72,7 @@
             v-icon(
               name="trash"
             )
+
         template(v-if="croppaOptions.isActive")
           template(v-if="croppaOptions.isUploaded")
             span.icon(@click="croppa.rotate(1)")
@@ -285,6 +307,7 @@ export default {
     width: 100%
     display: flex
     justify-content: center
+    align-items: center
     transform: translateY(-50%)
     transition: opacity .5s, transform .2s
     z-index: 5
@@ -303,6 +326,8 @@ export default {
       cursor: pointer
       transform: translateY(80%) scale(0.8)
       transition: 0.2s
+    &_resize.icon
+        cursor: move
 
 // .quill-editor
 //   min-height: 200px

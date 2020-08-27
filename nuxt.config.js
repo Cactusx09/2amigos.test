@@ -30,6 +30,7 @@ export default {
    ** Global CSS
    */
   css: [
+    'bulma-slider/dist/css/bulma-slider.min.css',
     'quill/dist/quill.core.css',
     'quill/dist/quill.snow.css',
     'quill/dist/quill.bubble.css',
