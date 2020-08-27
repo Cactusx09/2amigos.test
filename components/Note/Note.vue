@@ -1,14 +1,16 @@
 <template lang="pug">
   client-only
     div.note(
-      :style="`background-image: url('/${imageUrl}'); background-color: ${color}`"
+      :style="`background-image: url('${imageUrl}'); border-color: ${color}`"
       :class="[{ 'new-item': newNote }, { 'is-active-img': croppaOptions.isActive }]"
     )
+      .note__overlay(:style="`opacity: ${opacity/100}; background-color: ${color}`")
+
       quill-editor.note__editor(
         ref="editor"
         :content="content"
         :options="quillOptions"
-        @change="$emit('update:content', $event.html); onEditorChange($event)"
+        @change="$emit('update:content', $event.html); onChange()"
       )
 
       croppa.note__image(
@@ -37,18 +39,23 @@
         slot(name="buttons")
 
         template(v-if="!newNote & !croppaOptions.isActive")
-          span.icon.mx-2(v-if="imageUrl || color")
+          span.note__buttons_opacity.icon.mx-2(
+            v-if="imageUrl || color"
+          )
             v-icon(
               name="opacity"
               :scale="1.2"
             )
-          //- input.slider.is-fullwidth(
-          //-   step='1'
-          //-   min='0'
-          //-   max='100'
-          //-   value='50'
-          //-   type='range'
-          //- )
+            input.slider.is-small.box.is-marginless(
+              v-model.number="opacityModel"
+              @input="$emit('update:opacity', Number(opacityModel)); onChange()"
+              @mouseover.stop="$emit('disable-drag')"
+              @mouseleave.stop="$emit('enable-drag')"
+              step="1"
+              min="0"
+              max="100"
+              type="range"
+            )
           span.icon.mx-2(@click="activateCroppa()")
             v-icon(
               name="image"
@@ -61,7 +68,7 @@
 
           span.icon.mx-2
             v-swatches(
-              @input="onColorChanged($event)"
+              @input="$emit('update:color', $event); onChange()"
               show-fallback
             )
               v-icon(
@@ -106,6 +113,14 @@
             v-icon(
               name="times"
             )
+          span.icon.mr-3.ml-2(
+            v-if="imageUrl"
+            @click="deleteImage()"
+          )
+            v-icon(
+              name="trash"
+            )
+
 
           template(v-if="croppaOptions.isUploaded")
             span.icon.ml-4.mr-2(@click="croppa.flipX()")
@@ -136,6 +151,10 @@ export default {
     color: {
       type: String,
       default: '',
+    },
+    opacity: {
+      type: Number,
+      default: 50,
     },
     content: {
       type: String,
@@ -180,14 +199,14 @@ export default {
         width: null,
         height: null,
       },
+      opacityModel: this.opacity,
     }
   },
 
   methods: {
-    onColorChanged(color) {
-      this.$emit('update:color', color)
-      this.$emit('color-changed')
-    },
+    onChange: _.debounce(function () {
+      this.$emit('changed')
+    }, 1500),
     async onDeleteNote() {
       await this.$axios.post('/note/delete', {
         id: this.id,
@@ -210,14 +229,23 @@ export default {
         header: { 'Content-Type': 'multipart/form-data' },
       })
 
-      await this.$emit('update:imageUrl', data.path)
+      this.$emit('update:imageUrl', data.path)
 
+      this.croppaOptions.isUploaded = false
       this.croppa.remove()
-      this.croppaOptions.isActive = false
     },
-    onEditorChange: _.debounce(function (editor) {
-      this.$emit('text-changed', editor)
-    }, 1000),
+    async deleteImage() {
+      await this.$axios.post('/note/deleteImage', {
+        noteId: this.id,
+        path: this.imageUrl,
+      })
+
+      this.croppaOptions.isUploaded = false
+      this.croppaOptions.isActive = false
+      this.croppa.remove()
+
+      this.$emit('update:imageUrl', '')
+    },
   },
 }
 </script>
@@ -260,8 +288,7 @@ export default {
   background-size: cover
   background-repeat: no-repeat
   border-radius: 0.375rem
-  &::before
-    content: ''
+  &__overlay
     position: absolute
     left: 0
     top: 0
@@ -269,9 +296,8 @@ export default {
     height: 100%
     opacity: 0.8
     pointer-events: none
-    background: #fff
-    z-index: -1
     border-radius: 0.375rem
+    z-index: -1
   &:hover
     z-index: 5
     .note__buttons
@@ -282,9 +308,12 @@ export default {
   &.is-active-img
     .note__buttons
       opacity: 1
+      transform: none
       &::before
         opacity: 0.9
         background: linear-gradient(180deg, rgba(#e6e6e6,0.9) 0%, rgba(#e6e6e6,0.6) 55%, rgba(#e6e6e6,0) 100%)
+      .icon
+        transform: none
 
   &__editor
     width: 100%
@@ -296,11 +325,11 @@ export default {
     top: 0
     left: 0
     z-index: 3
+    border-radius: 0.375rem
+    overflow: hidden
     &:hover
       opacity: 0.92
   &__buttons
-    opacity: 0
-    // background-color: #fff
     position: absolute
     top: 0
     left: 0
@@ -308,6 +337,7 @@ export default {
     display: flex
     justify-content: center
     align-items: center
+    opacity: 0
     transform: translateY(-50%)
     transition: opacity .5s, transform .2s
     z-index: 5
@@ -322,15 +352,30 @@ export default {
       background: linear-gradient(180deg, rgba(#fff,1) 0%, rgba(#fff,0.8) 75%, rgba(#fff,0) 100%)
       border-radius: 0.375rem
       z-index: -1
+      opacity: 0.5
     .icon
       cursor: pointer
       transform: translateY(80%) scale(0.8)
       transition: 0.2s
     &_resize.icon
         cursor: move
-
-// .quill-editor
-//   min-height: 200px
-//   max-height: 400px
-//   overflow-y: auto
+    &_opacity
+      position: relative
+      &:hover
+        .slider
+          opacity: 1
+          transform: translateX(-50%) scale(1)
+          pointer-events: all
+      .slider
+        position: absolute
+        bottom: 100%
+        left: 50%
+        padding: 1rem
+        transform: translateY(20%) translateX(-50%) scale(.8)
+        transition: 0.3s
+        width: 170px
+        border-radius: 0.375rem
+        background-color: #fff
+        opacity: 0
+        pointer-events: none
 </style>

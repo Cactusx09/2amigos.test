@@ -28,10 +28,11 @@ const db = new sqlite3.Database(DBSOURCE, (err) => {
     db.run(
       `CREATE TABLE notes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        layout text,
-        content text,
-        image text,
-        color text,
+        layout TEXT,
+        content TEXT,
+        imageUrl TEXT,
+        color TEXT,
+        opacity INTEGER,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         user INTEGER,
         FOREIGN KEY(user) REFERENCES user(id)

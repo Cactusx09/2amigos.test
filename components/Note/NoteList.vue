@@ -31,8 +31,7 @@
             )
               note(
                 v-bind.sync="item"
-                @text-changed="saveNote(item)"
-                @color-changed="saveNote(item)"
+                @changed="saveNote(item)"
                 @delete="layout.items.splice(index, 1)"
                 @enable-drag="item.draggable = true"
                 @disable-drag="item.draggable = false"
@@ -59,6 +58,7 @@ export default {
         content: '',
         imageUrl: '',
         color: '',
+        opacity: 50,
       },
       layout: {
         breakpoint: 'xl',
@@ -82,7 +82,7 @@ export default {
           content: note.content,
           imageUrl: note.imageUrl,
           color: note.color,
-          draggable: true,
+          opacity: note.opacity || 0.5,
         }))
         this.layout.items = items
       })
@@ -105,6 +105,7 @@ export default {
         this.layout.items.push({
           ...this.newNote,
           id: data.id,
+          draggable: true,
         })
         this.newNote.content = ''
       }
