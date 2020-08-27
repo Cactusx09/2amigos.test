@@ -1,14 +1,14 @@
 <template lang="pug">
   client-only
     div.note(
-      :style="`background-image: url('/${image}')`"
+      :style="`background-image: url('/${imageUrl}'); background-color: ${color}`"
       :class="[{ 'new-item': newNote }, { 'is-active-img': croppaOptions.isActive }]"
     )
       quill-editor.note__editor(
         ref="editor"
         :content="content"
         :options="quillOptions"
-        @change="$emit('update:content', $event.html); onChange($event)"
+        @change="$emit('update:content', $event.html); onEditorChange($event)"
       )
 
       croppa.note__image(
@@ -34,15 +34,20 @@
         slot(name="buttons")
 
         template(v-if="!newNote & !croppaOptions.isActive")
-          span.icon.mx-2(@click="activateCroppa")
+          span.icon.mx-2(@click="activateCroppa()")
             v-icon(
               name="image"
             )
           span.icon.mx-2
-            v-icon(
-              name="palette"
+            v-swatches(
+              @input="onColorChanged($event)"
+              show-fallback
             )
-          span.icon.mx-2(@click="deleteNote")
+              v-icon(
+                slot="trigger"
+                name="palette"
+              )
+          span.icon.mx-2(@click="onDeleteNote()")
             v-icon(
               name="trash"
             )
@@ -59,7 +64,7 @@
               )
             span.icon.ml-3.mr-2(
               v-if="croppaOptions.isUploaded"
-              @click="loadImage"
+              @click="saveImage()"
             )
               v-icon(
                 name="check"
@@ -102,7 +107,11 @@ export default {
       type: Number,
       default: 0,
     },
-    image: {
+    imageUrl: {
+      type: String,
+      default: '',
+    },
+    color: {
       type: String,
       default: '',
     },
@@ -153,7 +162,11 @@ export default {
   },
 
   methods: {
-    async deleteNote() {
+    onColorChanged(color) {
+      this.$emit('update:color', color)
+      this.$emit('color-changed')
+    },
+    async onDeleteNote() {
       await this.$axios.post('/note/delete', {
         id: this.id,
       })
@@ -165,23 +178,23 @@ export default {
       this.croppaOptions.width = offsetWidth
       this.croppaOptions.height = offsetHeight
     },
-    async loadImage() {
+    async saveImage() {
       const blob = await this.croppa.promisedBlob()
       const formData = new FormData()
       formData.append('data', blob)
       formData.append('noteId', this.id)
 
-      const { data } = await this.$axios.post('/image/save', formData, {
+      const { data } = await this.$axios.post('/note/saveImage', formData, {
         header: { 'Content-Type': 'multipart/form-data' },
       })
 
-      await this.$emit('update:image', data.path)
+      await this.$emit('update:imageUrl', data.path)
 
       this.croppa.remove()
       this.croppaOptions.isActive = false
     },
-    onChange: _.debounce(function (editor) {
-      this.$emit('changed')
+    onEditorChange: _.debounce(function (editor) {
+      this.$emit('text-changed', editor)
     }, 1000),
   },
 }

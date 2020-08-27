@@ -31,7 +31,8 @@
             )
               note(
                 v-bind.sync="item"
-                @changed="saveNote(item)"
+                @text-changed="saveNote(item)"
+                @color-changed="saveNote(item)"
                 @delete="layout.items.splice(index, 1)"
               )
 
@@ -54,7 +55,8 @@ export default {
         width: 12,
         height: 2,
         content: '',
-        image: '',
+        imageUrl: '',
+        color: '',
       },
       layout: {
         breakpoint: 'xl',
@@ -76,7 +78,8 @@ export default {
           ...JSON.parse(note.layout),
           id: note.id,
           content: note.content,
-          image: note.image,
+          imageUrl: note.imageUrl,
+          color: note.color,
         }))
         this.layout.items = items
       })

@@ -1,6 +1,17 @@
 const express = require('express')
 const router = express.Router()
 // const passport = require('passport')
+const multer = require('multer')
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, './static/uploads')
+  },
+  filename(req, file, cb) {
+    cb(null, `${Date.now()}.${file.mimetype.split('/')[1]}`)
+  },
+})
+const upload = multer({ storage })
+
 const db = require('../configs/database.js')
 
 /**
@@ -141,8 +152,8 @@ router.post(
     const content = note.content
     delete note.content
     db.run(
-      'UPDATE notes SET (layout, content) = (?, ?) WHERE id = ?',
-      [JSON.stringify(note), content, note.id],
+      'UPDATE notes SET (layout, content, color) = (?, ?, ?) WHERE id = ?',
+      [JSON.stringify(note), content, note.color, note.id],
       (err, row) => {
         if (err) console.log(err)
         res.status(201).json({ message: 'success' })
@@ -180,6 +191,45 @@ router.post(
       if (err) return console.log(err)
       res.status(201).json({ message: 'success' })
     })
+  }
+)
+
+/**
+ * @swagger
+ * /api/note/saveImage:
+ *  post:
+ *    description: Create new note
+ *    products:
+ *      - application/json
+ *    parameters:
+ *      - name: login
+ *        type: string
+ *        required: true
+ *        in: formData
+ *      - name: password
+ *        type: string
+ *        required: true
+ *        in: formData
+ *    responses:
+ *      '200':
+ *        description: User successfull created
+ */
+router.post(
+  '/api/note/saveImage',
+  upload.single('data'),
+  ({ file, body }, res) => {
+    const modifiedPath = file.path.replace('static/', '')
+    db.run(
+      'UPDATE notes SET image = ? WHERE id = ?',
+      [modifiedPath, body.noteId],
+      (err, result) => {
+        if (err) {
+          res.status(400).json({ error: err.message })
+          return
+        }
+        res.status(201).json({ path: modifiedPath })
+      }
+    )
   }
 )
 

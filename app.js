@@ -14,10 +14,7 @@ async function start() {
   const nuxt = await loadNuxt('start')
   app.use(nuxt.render)
 }
-
 if (process.env.NODE_ENV === 'production') start()
-
-// start()
 
 const swaggerUi = require('swagger-ui-express')
 const swaggerJsDoc = require('swagger-jsdoc')
@@ -50,54 +47,6 @@ app.use(
     saveUninitialized: false,
   })
 )
-
-const multer = require('multer')
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, './static/uploads')
-  },
-  filename(req, file, cb) {
-    cb(null, `${Date.now()}.${file.mimetype.split('/')[1]}`)
-  },
-})
-
-const upload = multer({ storage })
-
-const db = require('./app/configs/database.js')
-/**
- * @swagger
- * /api/image/save:
- *  post:
- *    description: Create new note
- *    products:
- *      - application/json
- *    parameters:
- *      - name: login
- *        type: string
- *        required: true
- *        in: formData
- *      - name: password
- *        type: string
- *        required: true
- *        in: formData
- *    responses:
- *      '200':
- *        description: User successfull created
- */
-app.post('/api/image/save', upload.single('data'), ({ file, body }, res) => {
-  const modifiedPath = file.path.replace('static/', '')
-  db.run(
-    'UPDATE notes SET image = ? WHERE id = ?',
-    [modifiedPath, body.noteId],
-    (err, result) => {
-      if (err) {
-        res.status(400).json({ error: err.message })
-        return
-      }
-      res.status(201).json({ path: modifiedPath })
-    }
-  )
-})
 
 const userRouter = require('./app/routes/auth')
 app.use(userRouter)

@@ -31,6 +31,7 @@ const db = new sqlite3.Database(DBSOURCE, (err) => {
         layout text,
         content text,
         image text,
+        color text,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         user INTEGER,
         FOREIGN KEY(user) REFERENCES user(id)

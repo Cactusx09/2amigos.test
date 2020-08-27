@@ -34,6 +34,7 @@ export default {
     'quill/dist/quill.snow.css',
     'quill/dist/quill.bubble.css',
     'vue-croppa/dist/vue-croppa.css',
+    'vue-swatches/dist/vue-swatches.css',
   ],
   /*
    ** Plugins to load before mounting the App
@@ -44,6 +45,7 @@ export default {
     { src: '~plugins/dashboard-grid', ssr: false },
     { src: '~plugins/image-uploader' },
     { src: '~plugins/awesome-icons' },
+    { src: '~plugins/color-swatches' },
   ],
   /*
    ** Auto import components
@@ -73,7 +75,9 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    baseURL: `${process.env.BASE_URL}/${process.env.API_PREFIX}`,
+    baseURL: `${process.env.BASE_URL}${
+      process.env.NODE_ENV === 'development' ? ':' + process.env.PORT : ''
+    }/${process.env.API_PREFIX}`,
   },
   /*
    ** Build configuration
