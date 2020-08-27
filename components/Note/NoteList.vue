@@ -10,7 +10,7 @@
               locked
             )
               note(
-                :data.sync="newNote.content"
+                :content.sync="newNote.content"
                 @on-add="addNote"
                 new-note
               )
@@ -31,7 +31,6 @@
             )
               note(
                 v-bind.sync="item"
-                :data.sync="item.content"
                 @changed="saveNote(item)"
                 @delete="layout.items.splice(index, 1)"
               )
@@ -55,6 +54,7 @@ export default {
         width: 12,
         height: 2,
         content: '',
+        image: '',
       },
       layout: {
         breakpoint: 'xl',

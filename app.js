@@ -8,19 +8,16 @@ const port = process.env.PORT || 8080
 const cors = require('cors')
 app.use(cors())
 
-const { loadNuxt, build } = require('nuxt')
+const { loadNuxt } = require('nuxt')
 
-const isDev = process.env.NODE_ENV !== 'production'
 async function start() {
-  const nuxt = await loadNuxt(isDev ? 'dev' : 'start')
+  const nuxt = await loadNuxt('start')
   app.use(nuxt.render)
-
-  if (isDev) {
-    build(nuxt)
-  }
 }
 
-start()
+if (process.env.NODE_ENV === 'production') start()
+
+// start()
 
 const swaggerUi = require('swagger-ui-express')
 const swaggerJsDoc = require('swagger-jsdoc')

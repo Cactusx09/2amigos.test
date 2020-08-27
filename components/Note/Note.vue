@@ -9,7 +9,6 @@
         :content="content"
         :options="quillOptions"
         @change="$emit('update:content', $event.html); onChange($event)"
-        @focus="onFocus($event)"
       )
 
       croppa.note__image(
