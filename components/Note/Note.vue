@@ -6,9 +6,9 @@
     )
       quill-editor.note__editor(
         ref="editor"
-        :content="data"
+        :content="content"
         :options="quillOptions"
-        @change="$emit('update:data', $event.html); onChange($event)"
+        @change="$emit('update:content', $event.html); onChange($event)"
         @focus="onFocus($event)"
       )
 
@@ -107,7 +107,7 @@ export default {
       type: String,
       default: '',
     },
-    data: {
+    content: {
       type: String,
       default: '',
     },
@@ -166,33 +166,8 @@ export default {
       this.croppaOptions.width = offsetWidth
       this.croppaOptions.height = offsetHeight
     },
-    onFocus(event) {
-      // this.options = {
-      //   theme: 'snow',
-      //   modules: {
-      //     toolbar: [
-      //       ['bold', 'italic', 'underline', 'strike'],
-      //       ['blockquote', 'code-block'],
-      //       [{ header: 1 }, { header: 2 }],
-      //       [{ list: 'ordered' }, { list: 'bullet' }],
-      //       [{ script: 'sub' }, { script: 'super' }],
-      //       [{ indent: '-1' }, { indent: '+1' }],
-      //       [{ direction: 'rtl' }],
-      //       [{ size: ['small', false, 'large', 'huge'] }],
-      //       [{ header: [1, 2, 3, 4, 5, 6, false] }],
-      //       [{ font: [] }],
-      //       [{ color: [] }, { background: [] }],
-      //       [{ align: [] }],
-      //       ['clean'],
-      //       ['link', 'image', 'video'],
-      //     ],
-      //   },
-      // }
-      // debugger
-    },
     async loadImage() {
       const blob = await this.croppa.promisedBlob()
-      // debugger
       const formData = new FormData()
       formData.append('data', blob)
       formData.append('noteId', this.id)

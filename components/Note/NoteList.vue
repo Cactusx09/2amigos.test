@@ -34,7 +34,6 @@
                 :data.sync="item.content"
                 @changed="saveNote(item)"
                 @delete="layout.items.splice(index, 1)"
-                @image-load="item.image = $event"
               )
 
 
