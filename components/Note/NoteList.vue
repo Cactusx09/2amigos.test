@@ -82,7 +82,7 @@ export default {
           content: note.content,
           imageUrl: note.imageUrl,
           color: note.color,
-          opacity: note.opacity || 0.5,
+          opacity: note.opacity,
         }))
         this.layout.items = items
       })
@@ -90,25 +90,32 @@ export default {
 
   methods: {
     async addNote() {
+      const layout = {
+        x: this.newNote.x,
+        y: this.newNote.height,
+        width: this.newNote.width,
+        height: this.newNote.height,
+      }
       const { data } = await this.$axios.post('/note/create', {
         user: this.$auth.user.id,
-        layout: {
-          x: this.newNote.x,
-          y: this.newNote.y,
-          width: this.newNote.width,
-          height: this.newNote.height,
-        },
         content: this.newNote.content,
+        layout,
       })
 
-      if (data) {
-        this.layout.items.push({
-          ...this.newNote,
-          id: data.id,
-          draggable: true,
-        })
-        this.newNote.content = ''
-      }
+      this.layout.items.push({
+        id: data.id,
+        content: this.newNote.content,
+        imageUrl: this.newNote.imageUrl,
+        color: this.newNote.color,
+        opacity: this.newNote.opacity || 0.5,
+        draggable: true,
+        ...layout,
+      })
+      this.newNote.content = ''
+      this.newNote.id = -1
+      this.$nextTick(() => {
+        this.newNote.id = 0
+      })
     },
     async savePositions() {
       const response = await this.$axios.post('/notes/save', {
