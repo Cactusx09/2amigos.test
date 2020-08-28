@@ -114,14 +114,13 @@ export default {
           login: { url: '/login', method: 'post' },
           logout: { url: '/logout', method: 'get' },
           user: { url: '/user', method: 'get' },
-          // user: false,
         },
       },
     },
     redirect: {
-      login: '/login', // User will be redirected to this path if login is required.
-      home: '/', // User will be redirect to this path after login. (rewriteRedirects will rewrite this path)
-      logout: '/login', // User will be redirected to this path if after logout, current route is protected.
+      login: '/login',
+      home: '/',
+      logout: '/login',
     },
     rewriteRedirects: true,
   },

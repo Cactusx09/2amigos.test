@@ -5,19 +5,27 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const db = require('../configs/database.js')
 
-router.post('/api/login', passport.authenticate('local'), (req, res, next) => {
-  req.session.userInfo = req.user
-  req.session.save()
-  const token = jwt.sign({ id: req.user.id }, 'secret cat', {
-    expiresIn: 86400,
-  })
-  res.status(200).send({
-    user: {
-      id: req.user.id,
-      login: req.user.login,
-    },
-    token,
-  })
+router.post('/api/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err)
+    }
+
+    if (!user) return res.status(401).json(info)
+
+    req.session.userInfo = user
+    req.session.save()
+    const token = jwt.sign({ id: user.id }, 'secret cat', {
+      expiresIn: 86400,
+    })
+    res.status(200).send({
+      user: {
+        id: user.id,
+        login: user.login,
+      },
+      token,
+    })
+  })(req, res, next)
 })
 
 router.get('/api/logout', (req, res) => {
@@ -54,11 +62,18 @@ router.post(
     db.run(
       `INSERT INTO user (login, password) VALUES (?,?)`,
       [login, hashedPassword],
-      function (err, result) {
-        if (err) {
-          res.status(400).json({ error: err.message })
-          return
-        }
+      (err, row) => {
+        if (err)
+          return res.status(400).json({
+            message: 'User is already registered',
+            field: 'login',
+          })
+        if (row)
+          return res.status(400).json({
+            message: 'User is already registered',
+            field: 'login',
+          })
+
         res.status(201).json({
           userId: this.lastID,
         })
