@@ -54,6 +54,9 @@ app.use(userRouter)
 const notesRouter = require('./app/routes/notes')
 app.use(notesRouter)
 
+const imagesRouter = require('./app/routes/notes/images')
+app.use(imagesRouter)
+
 app.listen(port, () => {
   console.log(`Example app listening at ${port}`)
 })

@@ -232,6 +232,7 @@ export default {
       this.$emit('update:imageUrl', data.path)
 
       this.croppaOptions.isUploaded = false
+      this.croppaOptions.isActive = false
       this.croppa.remove()
     },
     async deleteImage() {
