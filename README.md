@@ -1,5 +1,7 @@
 # 2amigos.test
 
+Demo: https://trg-notes.herokuapp.com
+
 ## Build Setup
 
 ```bash
